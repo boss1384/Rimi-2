@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AG WADA VTU</title>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:system-ui,sans-serif; }
+body { background:#0a0a0a; color:white; height:100vh; overflow:hidden; }
+
+.mobile-frame {
+    width: 390px; height: 844px; background: #0f172a; border-radius: 40px;
+    overflow: hidden; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    margin: 20px auto;
+}
+
+.topbar { padding: 12px 20px; display: flex; justify-content: space-between; font-size: 14px; }
+.header { padding: 0 20px 10px; display: flex; align-items: center; gap: 12px; }
+
+.balance-card {
+    margin: 15px 20px; padding: 25px 20px; border-radius: 24px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white;
+}
+
+.balance { font-size: 32px; font-weight: 700; margin-top: 8px; }
+
+.services-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;
+}
+
+.service { text-align: center; cursor: pointer; }
+
+.service .icon {
+    width: 58px; height: 58px; background: #1e293b; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 8px; font-size: 26px;
+}
+
+.page { display: none; height: calc(100% - 70px); overflow: auto; padding-bottom: 80px; }
+.page.active { display: block; }
+
+.page-header {
+    padding: 20px; background: #1e293b; display: flex; align-items: center; gap: 12px;
+}
+
+.back-btn { background: none; border: none; color: white; font-size: 28px; cursor: pointer; }
+
+.input-field {
+    width: 100%; padding: 15px; margin: 10px 0; background: #1e293b;
+    border: none; border-radius: 12px; color: white;
+}
+
+.bank-option {
+    display: flex; align-items: center; gap: 15px; padding: 16px;
+    background: #1e293b; border-radius: 12px; margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.bottom-nav {
+    position: absolute; bottom: 0; left: 0; right: 0; background: #111827;
+    display: flex; justify-content: space-around; padding: 12px 0 18px;
+    border-top: 1px solid #334155;
+}
+
+.bottom-nav div { text-align: center; cursor: pointer; font-size: 11px; color: #94a3b8; }
+.bottom-nav div.active { color: white; }
+
+.fund-modal, .amount-modal {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.95); display: none;
+    align-items: center; justify-content: center; z-index: 1000;
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobile-frame">
+
+<!-- HOME -->
+<div id="homePage" class="page active">
+  <div class="topbar"><div id="currentTime">11:55 PM</div><div>4G • 84%</div></div>
+  <div class="header">
+    <div style="display:flex;gap:12px;align-items:center;">
+      <div style="width:45px;height:45px;border-radius:50%;background:#2563eb;display:flex;align-items:center;justify-content:center;font-size:22px;">👤</div>
+      <div><h3>Hi adamu!</h3><p style="font-size:13px;color:#cbd5e1;">What would you like to do?</p></div>
+    </div>
+    <div style="font-size:26px;cursor:pointer;" onclick="toggleTheme()">🔔</div>
+  </div>
+
+  <div class="balance-card">
+    <p>Available Balance</p>
+    <div class="balance" id="balance">₦2,500.00</div>
+    <button onclick="showFundWallet()" style="margin-top:15px;width:100%;padding:14px;background:rgba(255,255,255,0.25);border:none;border-radius:30px;color:white;font-weight:600;">Fund Wallet</button>
+  </div>
+
+  <div class="services">
+    <h3 style="margin-bottom:15px;">Services</h3>
+    <div class="services-grid">
+      <div class="service" onclick="showAirtime()"><div class="icon">📞</div><p>Airtime</p></div>
+      <div class="service" onclick="showData()"><div class="icon">🌐</div><p>Data</p></div>
+      <div class="service" onclick="showRechargePins()"><div class="icon">🔢</div><p>Recharge Pins</p></div>
+      <div class="service" onclick="showDataPin()"><div class="icon">🔄</div><p>Data Pin</p></div>
+      <div class="service" onclick="showElectricity()"><div class="icon">⚡</div><p>Electricity</p></div>
+      <div class="service" onclick="showExamPin()"><div class="icon">📚</div><p>Exam PIN</p></div>
+      <div class="service" onclick="showCable()"><div class="icon">📺</div><p>Cable TV</p></div>
+      <div class="service" onclick="referFriend()"><div class="icon">👥</div><p>Refer</p></div>
+    </div>
+  </div>
+
+  <div onclick="showVerification()" style="margin:20px;background:linear-gradient(90deg,#1e40af,#3b82f6);padding:16px;border-radius:16px;display:flex;gap:15px;align-items:center;cursor:pointer;">
+    <div style="font-size:40px;">✅</div>
+    <div><strong>VERIFY YOUR DETAILS</strong><br><small>Verify to get permanent account</small></div>
+  </div>
+
+  <div class="recent" style="padding-bottom:100px;">
+    <h3>Recent Transactions</h3>
+    <div id="recentTransactions"></div>
+  </div>
+
+  <div class="bottom-nav">
+    <div onclick="showHome()" class="active">🏠<div>Home</div></div>
+    <div onclick="showPricing()">💰<div>Pricing</div></div>
+    <div onclick="showHistory()">📜<div>History</div></div>
+    <div onclick="showProfile()">👤<div>Profile</div></div>
+  </div>
+</div>
+
+<!-- FUND WALLET -->
+<div id="fundModal" class="fund-modal">
+  <div style="background:#1e293b;padding:25px;border-radius:20px;width:90%;max-width:340px;">
+    <h2 style="text-align:center;margin-bottom:20px;">Fund Wallet</h2>
+    <div onclick="selectBank('Opay')" class="bank-option"><strong style="font-size:28px;">🏦</strong><div><strong>Opay</strong><br><small>Instant</small></div></div>
+    <div onclick="selectBank('PalmPay')" class="bank-option"><strong style="font-size:28px;">🌴</strong><div><strong>PalmPay</strong><br><small>Instant</small></div></div>
+    <div onclick="selectBank('Moniepoint')" class="bank-option"><strong style="font-size:28px;">💰</strong><div><strong>Moniepoint</strong><br><small>Instant</small></div></div>
+    <button onclick="closeFundModal()" style="width:100%;padding:16px;background:#ef4444;border:none;border-radius:12px;color:white;margin-top:20px;">Cancel</button>
+  </div>
+</div>
+
+<!-- Amount Modal -->
+<div id="amountModal" class="fund-modal">
+  <div style="background:#1e293b;padding:25px;border-radius:20px;width:90%;max-width:340px;">
+    <h2 id="bankTitle">Fund with Opay</h2>
+    <input type="number" id="fundAmount" class="input-field" placeholder="Enter Amount ₦" style="text-align:center;">
+    <div style="text-align:center;margin:15px 0;">
+      <small>Account Number</small><br>
+      <strong style="font-size:22px;color:#22c55e;">8101060610</strong>
+    </div>
+    <button onclick="confirmFunding()" style="width:100%;padding:16px;background:#2563eb;border:none;border-radius:12px;color:white;">Confirm</button>
+    <button onclick="closeAmountModal()" style="width:100%;padding:16px;background:transparent;border:1px solid #64748b;border-radius:12px;color:white;">Back</button>
+  </div>
+</div>
+
+<!-- Service Pages -->
+<div id="airtimePage" class="page">
+  <div class="page-header"><button class="back-btn" onclick="showHome()">←</button><h2>Airtime</h2></div>
+  <div style="padding:20px;">
+    <input type="text" id="airtimePhone" class="input-field" value="08012345678">
+    <input type="number" id="airtimeAmount" class="input-field" placeholder="Amount ₦">
+    <button onclick="buyAirtime()" style="width:100%;padding:16px;background:#2563eb;border:none;border-radius:12px;color:white;margin-top:10px;">Buy Airtime</button>
+  </div>
+</div>
+
+<div id="dataPage" class="page">
+  <div class="page-header"><button class="back-btn" onclick="showHome()">←</button><h2>Buy Data</h2></div>
+  <div style="padding:20px;">
+    <input type="text" id="dataPhone" class="input-field" value="08012345678">
+    <select id="dataPlan" class="input-field">
+      <option value="500">1GB - ₦500</option>
+      <option value="1200">2GB - ₦1,200</option>
+      <option value="2500">5GB - ₦2,500</option>
+      <option value="3500">10GB - ₦3,500</option>
+    </select>
+    <button onclick="buyData()" style="width:100%;padding:16px;background:#2563eb;border:none;border-radius:12px;color:white;margin-top:10px;">Buy Data</button>
+  </div>
+</div>
+
+<div id="rechargePage" class="page">
+  <div class="page-header"><button class="back-btn" onclick="showHome()">←</button><h2>Recharge Pins</h2></div>
+  <div style="padding:20px;">
+    <select id="rechargePlan" class="input-field">
+      <option value="500">MTN ₦500</option>
+      <option value="1000">MTN ₦1000</option>
+      <option value="2000">Airtel ₦2000</option>
+    </select>
+    <button onclick="buyRechargePin()" style="width:100%;padding:16px;background:#2563eb;border:none;border-radius:12px;color:white;margin-top:10px;">Purchase Pin</button>
+  </div>
+</div>
+
+<div id="dataPinPage" class="page">
+  <div class="page-header"><button class="back-btn" onclick="showHome()">←</button><h2>Data Pin</h2></div>
+  <div style="padding:20px;">
+    <select id="dataPinPlan" class="input-field">
+      <option value="1000">MTN 1GB - ₦1000</option>
+      <option value="2000">MTN 2GB - ₦2000</option>
+      <option value="3500">Glo 5GB - ₦3500</option>
+    </select>
+    <button onclick="buyDataPin()" style="width:100%;padding:16px;background:#2563eb;border:none;border-radius:12px;color:white;margin-top:10px;">Purchase Data Pin</button>
+  </div>
+</div>
+
+<div id="electricityPage" class="page">
+  <div class="page-header"><button class="back-btn" onclick="showHome()">←</button><h2>Electricity</h2></div>
+  <div style="padding:20px;">
+    <input type="text" id="meterNumber" class="input-field" value="12345678901">
+    <input type="number" id="elecAmount" class="input-field" value="1000">
+    <button onclick="payElectricity()" style="width:100%;padding:16px;background:#2563eb;border:none;border-radius:12px;color:white;margin-top:10px;">Pay Bill</button>
+  </div>
+</div>
+
+<div id="examPage" class="page">
+  <div class="page-header"><button class="back-btn" onclick="showHome()">←</button><h2>Exam PIN</h2></div>
+  <div style="padding:20px;">
+    <select id="examType" class="input-field">
+      <option>WAEC</option><option>NECO</option><option>JAMB</option>
+    </select>
+    <button onclick="buyExamPin()" style="width:100%;padding:16px;background:#2563eb;border:none;border-radius:12px;color:white;margin-top:20px;">Purchase PIN</button>
+  </div>
+</div>
+
+<div id="cablePage" class="page">
+  <div class="page-header"><button class="back-btn" onclick="showHome()">←</button><h2>Cable TV</h2></div>
+  <div style="padding:20px;">
+    <select id="cableProvider" class="input-field">
+      <option>GOtv</option><option>DSTV</option><option>StarTimes</option>
+    </select>
+    <button onclick="payCable()" style="width:100%;padding:16px;background:#2563eb;border:none;border-radius:12px;color:white;margin-top:20px;">Subscribe</button>
+  </div>
+</div>
+
+<script>
+// Clock
+function updateClock() {
+  const now = new Date();
+  let h = now.getHours(), m = now.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  document.getElementById('currentTime').textContent = `\( {h}: \){m.toString().padStart(2,'0')} ${ampm}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+let balance = 2500;
+let transactions = [];
+let currentBank = "";
+
+// Navigation
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showHome() { showPage('homePage'); }
+function showPricing() { showPage('pricingPage'); }
+function showProfile() { showPage('profilePage'); }
+function showHistory() { showPage('historyPage'); }
+
+// Service Pages
+function showAirtime() { showPage('airtimePage'); }
+function showData() { showPage('dataPage'); }
+function showRechargePins() { showPage('rechargePage'); }
+function showDataPin() { showPage('dataPinPage'); }
+function showElectricity() { showPage('electricityPage'); }
+function showExamPin() { showPage('examPage'); }
+function showCable() { showPage('cablePage'); }
+
+// Fund Wallet
+function showFundWallet() { document.getElementById('fundModal').style.display = 'flex'; }
+function closeFundModal() { document.getElementById('fundModal').style.display = 'none'; }
+
+function selectBank(bank) {
+  currentBank = bank;
+  closeFundModal();
+  document.getElementById('bankTitle').textContent = `Fund with ${bank}`;
+  document.getElementById('amountModal').style.display = 'flex';
+}
+
+function closeAmountModal() { document.getElementById('amountModal').style.display = 'none'; }
+
+function confirmFunding() {
+  const amount = parseInt(document.getElementById('fundAmount').value) || 0;
+  if (amount <= 0) return alert("Enter valid amount");
+  closeAmountModal();
+  setTimeout(() => {
+    balance += amount;
+    document.getElementById('balance').textContent = '₦' + balance.toLocaleString();
+    alert(`✅ ₦${amount} funded successfully via ${currentBank}!`);
+  }, 500);
+}
+
+// Purchase Functions
+function buyAirtime() {
+  const amount = parseInt(document.getElementById('airtimeAmount').value) || 0;
+  if (amount <= 0) return alert("Enter amount");
+  if (balance >= amount) {
+    balance -= amount;
+    document.getElementById('balance').textContent = '₦' + balance.toLocaleString();
+    alert("✅ Airtime purchased successfully!");
+    showHome();
+  } else alert("Insufficient balance!");
+}
+
+function buyData() {
+  const amount = parseInt(document.getElementById('dataPlan').value);
+  if (balance >= amount) {
+    balance -= amount;
+    document.getElementById('balance').textContent = '₦' + balance.toLocaleString();
+    alert("✅ Data purchased successfully!");
+    showHome();
+  } else alert("Insufficient balance!");
+}
+
+function buyRechargePin() {
+  const amount = parseInt(document.getElementById('rechargePlan').value);
+  if (balance >= amount) {
+    balance -= amount;
+    document.getElementById('balance').textContent = '₦' + balance.toLocaleString();
+    alert("✅ Recharge Pin purchased!");
+    showHome();
+  } else alert("Insufficient balance!");
+}
+
+function buyDataPin() {
+  const amount = parseInt(document.getElementById('dataPinPlan').value);
+  if (balance >= amount) {
+    balance -= amount;
+    document.getElementById('balance').textContent = '₦' + balance.toLocaleString();
+    alert("✅ Data Pin purchased!");
+    showHome();
+  } else alert("Insufficient balance!");
+}
+
+function payElectricity() {
+  const amount = parseInt(document.getElementById('elecAmount').value) || 1000;
+  if (balance >= amount) {
+    balance -= amount;
+    document.getElementById('balance').textContent = '₦' + balance.toLocaleString();
+    alert("✅ Electricity bill paid!");
+    showHome();
+  } else alert("Insufficient balance!");
+}
+
+function payCable() {
+  if (balance >= 1500) {
+    balance -= 1500;
+    document.getElementById('balance').textContent = '₦' + balance.toLocaleString();
+    alert("✅ Cable TV subscribed!");
+    showHome();
+  } else alert("Insufficient balance!");
+}
+
+function buyExamPin() {
+  if (balance >= 1500) {
+    balance -= 1500;
+    document.getElementById('balance').textContent = '₦' + balance.toLocaleString();
+    alert("✅ Exam PIN purchased!");
+    showHome();
+  } else alert("Insufficient balance!");
+}
+
+function referFriend() {
+  const code = "AGWADA" + Math.floor(100000 + Math.random() * 900000);
+  alert(`🎉 Referral Code: ${code}\n\nEarn ₦500 per successful referral!`);
+}
+
+function toggleTheme() { alert("Theme Changed"); }
+
+// Initialize
+</script>
+
+</div>
+</body>
+</html>
